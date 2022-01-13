@@ -14,15 +14,18 @@ import custom_modules.prom_metrics as prom_metrics
 env = get_env.fetch_env()
 
 # Configuring logger
-def log_docker_prom_exporter():
+def log_docker_exporter():
 	logger = logging.getLogger(__name__)
 	handler = logging.StreamHandler()
 	formatter = logging.Formatter('%(asctime)s [%(levelname)-7s] %(name)s - %(message)s')
 	handler.setFormatter(formatter)
 	logger.addHandler(handler)
-	logger.setLevel(env['LOG_LEVEL']) # Use environment variable instead of static value
+	#logger.setLevel(env['LOG_LEVEL'])
+	logger.setLevel(logging.DEBUG)
 	return logger
 
+# Start logger
+log = log_docker_exporter()
 
 # Main program
 if __name__ == '__main__':
@@ -44,7 +47,7 @@ if __name__ == '__main__':
 			prom_metrics.update_metrics(container, metrics)
 
 		# Wait until 5s have passed from the updates
-		logging.debug('Metric update time = '(time.perf_counter() - start_time))
+		log.debug('Metric update time = ' + str(time.perf_counter() - start_time))
 		time.sleep(5 -(time.perf_counter() - start_time))
 
 	
