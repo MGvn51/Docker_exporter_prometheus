@@ -20,8 +20,8 @@ def make_metrics(METRICS_PREFIX = 'docker_exporter'):
 	metrics_dict['mem_unevictable'] = Gauge(METRICS_PREFIX + '_mem_unevictable', 'The amount of memory that cannot be reclaimed.', ['name','id'])
 	
 	# CPU
-	metrics_dict['cpu_user_seconds'] = Gauge(METRICS_PREFIX + '_cpu_user', 'Amount of time a process has direct control of the CPU, executing process code.', ['name','id'])
-	metrics_dict['cpu_system_seconds'] = Gauge(METRICS_PREFIX + '_cpu_system', 'Amount of time the kernel is executing system calls on behalf of the process.', ['name','id'])
+	metrics_dict['cpu_user_seconds'] = Gauge(METRICS_PREFIX + '_cpu_user_seconds', 'Amount of time a process has direct control of the CPU, executing process code.', ['name','id'])
+	metrics_dict['cpu_system_seconds'] = Gauge(METRICS_PREFIX + '_cpu_system_seconds', 'Amount of time the kernel is executing system calls on behalf of the process.', ['name','id'])
 	
 	# Block I/O
 	metrics_dict['blkio_bytes_read'] = Gauge(METRICS_PREFIX + '_blkio_bytes_read', 'Number of bytes read.', ['name', 'id', 'device'])
@@ -89,10 +89,12 @@ def update_metrics(CONTAINER, metrics_dict):
 		tmp_cpu_list = tmp_cpu_file.split()
 		for i in range(0, len(tmp_cpu_list), 2):
 			try:
-				#print('cpu_' + tmp_cpu_list[i] + ' : ' + tmp_cpu_list[i+1])
+				#print('cpu_' + tmp_cpu_list[i] + ' : ' + str(int(tmp_cpu_list[i+1])/100))
 				metrics_dict['cpu_' + tmp_cpu_list[i] + '_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(tmp_cpu_list[i+1])/100)
 			except KeyError:
 				pass
+	
+	
 
 	# Get block I/O data from BLK_IO_PATH and BLK_BYTES_PATH
 	#  I/O data
