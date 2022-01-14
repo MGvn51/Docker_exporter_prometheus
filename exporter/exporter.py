@@ -21,7 +21,7 @@ def log_docker_exporter():
 	handler.setFormatter(formatter)
 	logger.addHandler(handler)
 	#logger.setLevel(env['LOG_LEVEL'])
-	logger.setLevel(logging.DEBUG)
+	logger.setLevel(env['LOG_LEVEL'])
 	return logger
 
 # Start logger
