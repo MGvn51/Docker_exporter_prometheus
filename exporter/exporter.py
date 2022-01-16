@@ -20,7 +20,6 @@ def log_docker_exporter():
 	formatter = logging.Formatter('%(asctime)s [%(levelname)-7s] %(name)s - %(message)s')
 	handler.setFormatter(formatter)
 	logger.addHandler(handler)
-	#logger.setLevel(env['LOG_LEVEL'])
 	logger.setLevel(env['LOG_LEVEL'])
 	return logger
 
@@ -34,20 +33,38 @@ if __name__ == '__main__':
 	client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 
 	# Create metrics (startup only)
-	metrics = prom_metrics.make_metrics()
+	metrics = prom_metrics.make_metrics(env['METRICS_PREFIX'], env['METRICS_DETAILS'])
 
 	# Start prometheus server
 	start_http_server(11211)
 
 	# Start automatic updates
+	container_reload_time = time.perf_counter()
+	containers_list = client.containers.list()
 	while True:
 		# Save start time
 		start_time = time.perf_counter()
-		for container in client.containers.list():
-			prom_metrics.update_metrics(container, metrics)
+		# Update containers metrics
+		for container in containers_list:
+			c_time = time.perf_counter()
+			prom_metrics.update_metrics(container, metrics, env['METRICS_DETAILS'])
+			# Update the metric for update time
+			metrics['update_time_seconds'].labels(container.name, container.id).set(time.perf_counter()-c_time)
 
-		# Wait until 5s have passed from the updates
+		# Check if it's time to reload containers
+		if time.perf_counter() >= container_reload_time + 60:
+			container_reload_time = time.perf_counter()
+			containers_list = []
+			for container in client.containers.list():
+				container.reload()
+				containers_list.append(container)
+
+		# Wait until it's time to update the metrics again
 		log.debug('Metric update time = ' + str(time.perf_counter() - start_time))
-		time.sleep(5 -(time.perf_counter() - start_time))
-
-	
+		try:
+			time.sleep(5 -(time.perf_counter() - start_time))
+		except ValueError:
+			log.warning(f'Metrics update took more than {env[UPDATE_SECONDS]} seconds')
+			pass
+		
+		

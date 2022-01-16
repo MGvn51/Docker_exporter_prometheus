@@ -45,7 +45,7 @@ def fetch_env():
 	try:
 		_env['UPDATE_SECONDS'] = int(update_seconds)
 	except ValueError:
-		warn_env('UPDATE_SECONDS')
+		_warn_env('UPDATE_SECONDS')
 		_env['UPDATE_SECONDS'] = 5
 
 	# Metrics prefix
@@ -53,8 +53,22 @@ def fetch_env():
 	if match('^[a-zA-Z_]*$', metrics_prefix):
 		_env['METRICS_PREFIX'] = metrics_prefix
 	else:
-		warn_env('METRICS_PREFIX')
+		_warn_env('METRICS_PREFIX')
 
+	# Metrics detail
+	metrics_details = getenv('METRICS_DETAILS', 'standard') # Defaults to 'standard'
+	if metrics_details in ['minimal', 'standard', 'extended']:
+		_env['METRICS_DETAILS'] = metrics_details
+	else:
+		_warn_env('METRICS_DETAILS')
+	
+	# Containers reload seconds
+	containers_reload_seconds = getenv('CONTAINERS_RELOAD_SECONDS', '60') # Defaults to '60'
+	try:
+		_env['CONTAINERS_RELOAD_SECONDS'] = int(containers_reload_seconds)
+	except ValueError:
+		_warn_env('CONTAINERS_RELOAD_SECONDS')
+		_env['CONTAINERS_RELOAD_SECONDS'] = 60
 
 	# If logging is set to debug level print a human readable version of the envirnment variables
 	logging.debug(_dict_form(_env))
