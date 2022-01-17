@@ -1,6 +1,16 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2022-01-17
+
+### Added
+
+### Changed
+
+### Fixed
+- Fixed `cpu_percpu_usage_seconds` not being reported in seconds
+
+
 ## [0.2.1] - 2022-01-17
 
 ### Added

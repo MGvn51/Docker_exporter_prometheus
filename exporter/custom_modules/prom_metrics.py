@@ -166,7 +166,7 @@ def update_metrics(CONTAINER, metrics_dict, METRICS_DETAILS):
 			for j in range(len(cpu_list)):
 				if cpu_list[j] != '0':
 					try:
-						metrics_dict['cpu_percpu_usage_seconds'].labels(CONTAINER.name, CONTAINER.id, j).set(cpu_list[j])
+						metrics_dict['cpu_percpu_usage_seconds'].labels(CONTAINER.name, CONTAINER.id, j).set(int(cpu_list[j])/1000000000)
 					except KeyError:
 						pass
 					n_cpus = n_cpus + 1
@@ -212,8 +212,8 @@ def update_metrics(CONTAINER, metrics_dict, METRICS_DETAILS):
 		try:
 			with open(CPU_PATH, 'r') as f:
 				cpu_stats_list = f.read().split()
-				metrics_dict['cpu_user_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(cpu_stats_list[1])/100)
-				metrics_dict['cpu_system_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(cpu_stats_list[3])/100)
+				metrics_dict['cpu_user_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(cpu_stats_list[1])100)
+				metrics_dict['cpu_system_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(cpu_stats_list[3])100)
 		except FileNotFoundError:
 			logging.warning(f'Unable to open file : "{CPU_PATH}"')
 		
