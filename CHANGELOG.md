@@ -1,7 +1,17 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
-## [0.1.2] - 2022-01-17
+## [0.2.1] - 2022-01-17
+
+### Added
+
+### Changed
+
+### Fixed
+- Fixed `cpu_user_seconds` and `cpu_system_seconds` not being reported in seconds
+- Fixed formatting for Metrics_exported.md
+
+## [0.2.0] - 2022-01-17
 
 ### Added
 - Added ability to choose between minimal, standard and extended levels of metrics using `METRICS_DETAILS` as an environment variable

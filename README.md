@@ -11,7 +11,7 @@ In order to use docker-compose copy the following code to a file called `docker-
 version: "2.1"
 services:
   docker-exporter:
-  image: mgvn51/docker_exporter_prometheus:0.2.0
+  image: mgvn51/docker_exporter_prometheus:0.2.1
   container_name: docker_exporter_prometheus
   environment:
     - LOG_LEVEL=info
@@ -47,11 +47,11 @@ docker run -d \
   -v /path/to/cgroup/blkio/docker:/host_docker/blkio:ro \
   -v /var/run/docker.sock:/var/run/docker.sock:ro \
   --restart unless-stopped \
-  mgvn51/docker_exporter_prometheus:0.2.0
+  mgvn51/docker_exporter_prometheus:0.2.1
 ```
 
 ### Build image
-Clone the [repository](https://github.com/MGvn51/Docker_exporter_prometheus.git) and run the command `docker build -t docker_exporter_prometheus:0.2.0 .` to create the image
+Clone the [repository](https://github.com/MGvn51/Docker_exporter_prometheus.git) and run the command `docker build -t docker_exporter_prometheus:0.2.1 .` to create the image
 ```dockerfile
 FROM python:3.8.10-slim
 
@@ -76,7 +76,7 @@ This program does not use the docker sdk for obtaining metrics due to it being i
 | extended | 16.371983 | 1.091465 | ~35% slower |
 | standard | 12.152433 | 0.810162 | - |
 | minimal | 6.011583 | 0.400772 | ~50% faster |
-\*Test performed with 15 containers
+\*Test performed with 15 containers on AMD ryzen 5 3400G
 
 ## Parameters
 Container images are configured using parameters passed at runtime.
@@ -94,7 +94,7 @@ Container images are configured using parameters passed at runtime.
 | `-v /path/to/cgroup/cpuacct/docker:/host_docker/cpuacct` | Path to the docker cpuacct cgroup|
 |  `-v /path/to/cgroup/blkio/docker:/host_docker/blkio` | Path to the docker blkio cgroup |
 
-\*Availables values for `METRICS_DETAILS` are 'minimal', 'standard' and 'extended'.
+\*Availables values for `METRICS_DETAILS` are 'minimal', 'standard' and 'extended', for metrics associated with the value visit [here](https://github.com/MGvn51/Docker_exporter_prometheus/blob/main/Metrics_exported.md).
 
 ## Missing features
 Due to the program still being incomplete network metrics are not available, also there might be slight problems depending on the kind of cgroup used due to them being untested.
