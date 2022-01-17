@@ -212,8 +212,8 @@ def update_metrics(CONTAINER, metrics_dict, METRICS_DETAILS):
 		try:
 			with open(CPU_PATH, 'r') as f:
 				cpu_stats_list = f.read().split()
-				metrics_dict['cpu_user_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(cpu_stats_list[1])100)
-				metrics_dict['cpu_system_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(cpu_stats_list[3])100)
+				metrics_dict['cpu_user_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(cpu_stats_list[1])/100)
+				metrics_dict['cpu_system_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(cpu_stats_list[3])/100)
 		except FileNotFoundError:
 			logging.warning(f'Unable to open file : "{CPU_PATH}"')
 		
