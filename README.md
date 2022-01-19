@@ -11,7 +11,7 @@ In order to use docker-compose copy the following code to a file called `docker-
 version: "2.1"
 services:
   docker-exporter:
-  image: mgvn51/docker_exporter_prometheus:0.2.1
+  image: mgvn51/docker_exporter_prometheus:0.2.3
   container_name: docker_exporter_prometheus
   environment:
     - LOG_LEVEL=info
@@ -47,11 +47,11 @@ docker run -d \
   -v /path/to/cgroup/blkio/docker:/host_docker/blkio:ro \
   -v /var/run/docker.sock:/var/run/docker.sock:ro \
   --restart unless-stopped \
-  mgvn51/docker_exporter_prometheus:0.2.1
+  mgvn51/docker_exporter_prometheus:0.2.3
 ```
 
 ### Build image
-Clone the [repository](https://github.com/MGvn51/Docker_exporter_prometheus.git) and run the command `docker build -t docker_exporter_prometheus:0.2.1 .` to create the image
+Clone the [repository](https://github.com/MGvn51/Docker_exporter_prometheus.git) and run the command `docker build -t docker_exporter_prometheus:0.2.3 .` to create the image
 ```dockerfile
 FROM python:3.8.10-slim
 

@@ -1,6 +1,15 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [0.2.3] - 2022-01-19
+
+### Added
+- Removed containers metrics will be removed after the container reload
+
+### Changed
+
+### Fixed
+
 ## [0.2.2] - 2022-01-17
 
 ### Added
@@ -8,7 +17,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 ### Fixed
-- Fixed `cpu_percpu_usage_seconds` not being reported in seconds
+- Fixed `cpu_percpu_usage_seconds`  not being reported in seconds
 
 
 ## [0.2.1] - 2022-01-17

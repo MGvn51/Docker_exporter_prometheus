@@ -6,6 +6,9 @@ import docker
 import logging
 from time import perf_counter
 
+# Create a dictionary to remember the metrics labels
+_metrics_labels = {}
+
 # Configuring logger
 def log_docker_exporter():
 	logger = logging.getLogger(__name__)
@@ -134,6 +137,9 @@ def update_metrics(CONTAINER, metrics_dict, METRICS_DETAILS):
 	# Chart of details levels
 	DETAILS_LEVELS = {'minimal' : 0, 'standard' : 1, 'extended' : 2}
 
+	# Create a dictionary to add to _metrics_labels
+	_metrics_labels[CONTAINER.name] = {'id' : CONTAINER.id, 'devices' : []}
+
 	# Files path
 	MEM_STAT_PATH = f'/host_docker/memory/{CONTAINER.id}/memory.stat'
 	MEM_USAGE_PATH = f'/host_docker/memory/{CONTAINER.id}/memory.usage_in_bytes'
@@ -215,7 +221,7 @@ def update_metrics(CONTAINER, metrics_dict, METRICS_DETAILS):
 				metrics_dict['cpu_user_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(cpu_stats_list[1])/100)
 				metrics_dict['cpu_system_seconds'].labels(CONTAINER.name, CONTAINER.id).set(int(cpu_stats_list[3])/100)
 		except FileNotFoundError:
-			logging.warning(f'Unable to open file : "{CPU_PATH}"')
+			report_file_warning(CPU_PATH)
 		
 		# Block I/O (standard + extended)
 		try:
@@ -224,6 +230,8 @@ def update_metrics(CONTAINER, metrics_dict, METRICS_DETAILS):
 				for j in range(0, len(tmp_list)-2, 3):
 					try:
 						metrics_dict['blkio_io_' + tmp_list[j+1].lower()].labels(CONTAINER.name, CONTAINER.id, tmp_list[j]).set(int(tmp_list[j+2]))
+						if j not in _metrics_labels[CONTAINER.name]['devices']:
+							_metrics_labels[CONTAINER.name]['devices'].append(j)
 					except KeyError:
 						pass
 		except FileNotFoundError:
@@ -246,6 +254,33 @@ def update_metrics(CONTAINER, metrics_dict, METRICS_DETAILS):
 
 		# Block I/O
 
+
+
+def clean_old_metrics(CONTAINERS_LIST, metrics_dict):
+	# Extracts containers name
+	containers_name = {}
+	for container in CONTAINERS_LIST:
+		containers_name[container.name] = 0
+
+	# Check if the old data is still relevant
+	keys_to_remove = []
+	for name, labels in _metrics_labels.items():
+		if name not in containers_name:
+			# Remove the corresponding stuff
+			for key, metrics in metrics_dict.items():
+				# Blkio metrics generally have
+				if key[0:5] == 'blkio' and key[-3:] != 'tot':
+					for devs in labels['devices']:
+						metrics.remove(name, labels['id'], devs)
+				else:
+					metrics.remove(name, labels['id'])
+		
+			# Ater removing the metrics flag the entry in the _metrics_labels dictionary to be removed
+			keys_to_remove.append(name)
+	
+	# Remove flagged entryes
+	for j in keys_to_remove:
+		del _metrics_labels[j]
 
 
 # Test container_metrics

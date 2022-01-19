@@ -55,9 +55,12 @@ if __name__ == '__main__':
 		if time.perf_counter() >= container_reload_time + 60:
 			container_reload_time = time.perf_counter()
 			containers_list = []
+			# Reload containers (renew docker sdk cache)
 			for container in client.containers.list():
 				container.reload()
 				containers_list.append(container)
+			# Clean old dontainers metrics
+			prom_metrics.clean_old_metrics(containers_list, metrics)
 
 		# Wait until it's time to update the metrics again
 		log.debug('Metric update time = ' + str(time.perf_counter() - start_time))
